@@ -1,106 +1,185 @@
-tower_width = int(input("Enter tower width: "))
-tower_height = int(input("Enter tower height: "))
-car_width = int(input("Enter car width: "))
-#---------------HOMEWORK STARTS BELOW---------------#
-"""My program puts every character in a line into a list which is in
-a nested list. I create the tower and the background first and then 
-create the car on top of it. In the last step I print out the lists. 
-I believe this gives me more control over the whole picture than just printing."""
-x = 1
-y = 0
-q = 1
-t = 1
-r = 0
-car_width_copy = car_width
-car_left_x = 20
-car_location = 20
-full_list = []
-roof_list = []
-width_list = []
-towerside_list = []
-#Creating multiple frames
-for picture_number in range(21 + car_width):
-    #Creating the roof of the tower and appending it to a nested list
-    for roof in range(tower_width // 2):
-        for roof_line in range(tower_width):
+import time
+import random
 
-            if x == tower_width // 2 - y:
-                roof_list.append("/")
-            elif x == tower_width // 2 + 1 + y:
-                roof_list.append("\\")
-            else:
-                roof_list.append(" ")
-            x = x + 1
-        while q <= car_width - tower_width + 20:
-            roof_list.append(" ")
-            q = q + 1
-        q = 1
-        x = 1
-        y = y + 1
-        """Appending to a nested list in which one
-        list is equal to one line of the picture"""
-        full_list.append(roof_list.copy())
-        roof_list.clear()
-    y = 0
-    #Creating the X's under the roof and appending it to the list
-    for tower_ceiling in range(tower_width):
-        width_list.append("X")
-    while q <= car_width - tower_width + 20:
-        width_list.append(" ")
-        q = q + 1
-    q = 1
-    full_list.append(width_list.copy())
 
-    #Creating the sides of the tower
-    towerside_list.append("|")
-    while q <= tower_width - 2:
-        towerside_list.append(" ")
-        q = q + 1
-    q = 1
-    towerside_list.append("|")
-    while q <= car_width - tower_width + 20:
-        towerside_list.append(" ")
-        q = q + 1
-    q = 1
+line_list = []
+game_list = []
+yy = 0
+loop_status = True
+chosen_block = 0
 
-    #Multiplying the list with the sidewalls of the tower
-    for j in range(tower_height - 2):
-        full_list.append(towerside_list.copy())
+# Creating a 10 width line in list
+for i in range(10):
+    line_list.append(" ")
 
-    #Appending for the X's on the floor
-    full_list.append(width_list.copy())
+# Appending 20 lists for a 20x10 grid
+for i in range(20):
+    game_list.append(line_list.copy())
 
-    n = 0
-    #Adding the car to the picture
-    for number1 in range(car_width):
-        full_list[-4][car_left_x + n] = "="
-        full_list[-5][car_left_x + n] =" "
-        full_list[-6][car_left_x + n] = "="
-        n = n + 1
+line_list.clear()
 
-    if car_location >= 0:
-        full_list[-5][car_left_x] = "("
+# Game floor
+for i in range(10):
+    line_list.append("*")
 
-    if car_location + car_width_copy > 0:
-        full_list[-5][car_left_x + car_width - 1] = ")"
+game_list.append(line_list.copy())
+line_list.clear()
 
-    #Moving the car
-    car_left_x = car_left_x - 1
-    car_location = car_location - 1
 
-    if car_left_x < 0:
-        car_width = car_width - 1
-        car_left_x = car_left_x + 1
-        r = r + 1
+def block_done():
+    global chosen_block
+    chosen_block = random.randint(1,7)
 
-    #Printing out the contents of the nested list
-    for sublist in full_list:
-        for pixel in sublist:
-            print(pixel, end="")
-        print("")
 
-    #Cleaning the lists to be used for the next loop
-    full_list.clear()
-    roof_list.clear()
-    width_list.clear()
-    towerside_list.clear()
+#Square Block
+def block1(x,y):
+    global yy
+    if y != 0 and game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][5 + x] not in ["□", "*"]:
+        game_list[y - 1][4 + x] = " "
+        game_list[y - 1][5 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y][5 + x] = " "
+    if game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][5 + x] not in ["□", "*"]:
+        game_list[y][4 + x] = "□"
+        game_list[y][5 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 1][5 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+#Line Block
+def block2(x,y):
+    global yy
+    if y != 0 and game_list[y + 3][4 + x] not in ["□", "*"]:
+        game_list[y - 1][4 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y + 1][4 + x] = " "
+        game_list[y + 2][4 + x] = " "
+    if game_list[y + 3][4 + x] not in ["□", "*"]:
+        game_list[y][4 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 2][4 + x] = "□"
+        game_list[y + 3][4 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+
+#L Shaped Block
+def block3(x,y):
+    global yy
+    if y != 0 and game_list[y + 2][4 + x] not in ["□", "*"] and game_list[y + 2][5 + x] not in ["□", "*"]:
+        game_list[y - 1][4 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y + 1][4 + x] = " "
+        game_list[y + 1][5 + x] = " "
+    if game_list[y + 2][4 + x] not in ["□", "*"] and game_list[y + 2][5 + x] not in ["□", "*"]:
+        game_list[y][4 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 2][4 + x] = "□"
+        game_list[y + 2][5 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+#Reversed L Shaped Block
+def block4(x,y):
+    global yy
+    if y != 0 and game_list[y + 2][4 + x] not in ["□", "*"] and game_list[y + 2][3 + x] not in ["□", "*"]:
+        game_list[y - 1][4 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y + 1][4 + x] = " "
+        game_list[y + 1][3 + x] = " "
+    if game_list[y + 2][4 + x] not in ["□", "*"] and game_list[y + 2][3 + x] not in ["□", "*"]:
+        game_list[y][4 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 2][4 + x] = "□"
+        game_list[y + 2][3 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+#T Shaped Block
+def block5(x,y):
+    global yy
+    if y != 0 and game_list[y + 1][4 + x] not in ["□", "*"]:
+        game_list[y - 1][3 + x] = " "
+        game_list[y - 1][4 + x] = " "
+        game_list[y - 1][5 + x] = " "
+        game_list[y][4 + x] = " "
+    if game_list[y + 1][4 + x] not in ["□", "*"]:
+        game_list[y][3 + x] = "□"
+        game_list[y][4 + x] = "□"
+        game_list[y][5 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+
+#2/2 Block
+def block6(x,y):
+    global yy
+    if y != 0 and game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][5 + x] not in ["□", "*"]:
+        game_list[y - 1][3 + x] = " "
+        game_list[y - 1][4 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y][5 + x] = " "
+    if game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][5 + x] not in ["□", "*"]:
+        game_list[y][3 + x] = "□"
+        game_list[y][4 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 1][5 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+#Reversed 2/2 Block
+def block7(x,y):
+    global yy
+    if y != 0 and game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][3 + x] not in ["□", "*"]:
+        game_list[y - 1][5 + x] = " "
+        game_list[y - 1][4 + x] = " "
+        game_list[y][4 + x] = " "
+        game_list[y][3 + x] = " "
+    if game_list[y + 1][4 + x] not in ["□", "*"] and game_list[y + 1][3 + x] not in ["□", "*"]:
+        game_list[y][5 + x] = "□"
+        game_list[y][4 + x] = "□"
+        game_list[y + 1][4 + x] = "□"
+        game_list[y + 1][3 + x] = "□"
+    else:
+        yy = 0
+        block_done()
+
+def tetris():
+    global yy
+    global chosen_block
+
+    if chosen_block == 1:
+        block1(0, yy)
+    if chosen_block == 2:
+        block2(0, yy)
+    if chosen_block == 3:
+        block3(0, yy)
+    if chosen_block == 4:
+        block4(0, yy)
+    if chosen_block == 5:
+        block5(0, yy)
+    if chosen_block == 6:
+        block6(0, yy)
+    if chosen_block == 7:
+        block7(0, yy)
+
+    yy += 1
+
+    #Printing out the game
+    for sub_list in game_list:
+        print("".join(sub_list))
+
+
+block_done()
+while loop_status:
+
+    tetris()
+    time.sleep(0.1)
